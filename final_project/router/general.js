@@ -5,8 +5,29 @@ let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
 
+// Utilidades
+const requests = function(obj, item) {
+    for (let value in obj) {
+        if (obj[value].item === item) {
+            res.send(obj[value]);
+        }
+      }
+}
+
 public_users.post("/register", (req,res) => {
   //Write your code here
+  let username = req.body.username;
+  let password = req.body.password;
+  if (users.username === username && users.password === password) {
+    res.status(403).json({message: "User already exist"});
+  } else {
+    let newUser = {
+        username,
+        password
+    }
+    users.push(newUser);
+    res.send("User: " + newUser.username + " has been added");
+  }
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
@@ -36,13 +57,21 @@ public_users.get('/author/:author',function (req, res) {
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  let title = req.params.title;
+  for (let titleBook in books) {
+    if (books[titleBook].title === title) {
+        res.send(books[titleBook]);
+    }
+  }
 });
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  let isbn = req.params.isbn;
+  if(books[isbn]) {
+      res.send(books[isbn].reviews);
+  }
 });
 
 module.exports.general = public_users;
